@@ -10,8 +10,8 @@ public class Product {
 
     @Id
     @Column(name = "id")
-    @SequenceGenerator(name = "product_sequence", sequenceName = "PRODUCT_SEQ")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_sequence")
+    @SequenceGenerator(name = "product_gen", sequenceName = "product_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_gen")
     private Long id;
 
     @Column(name = "sku")

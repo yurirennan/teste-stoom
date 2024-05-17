@@ -9,8 +9,8 @@ public class Brand {
 
     @Id
     @Column(name = "id")
-    @SequenceGenerator(name = "brand_sequence", sequenceName = "BRAND_SEQ")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "brand_sequence")
+    @SequenceGenerator(name = "brand_gen", sequenceName = "brand_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "brand_gen")
     private Long id;
 
     @Column(name = "name")
