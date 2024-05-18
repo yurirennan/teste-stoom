@@ -33,7 +33,7 @@ public class CategoryBO implements ICategoryBO {
 
     @Override
     public ReadCategoryResponseDTO listCategory(final Long categoryId) {
-        final Optional<Category> categoryOptional = this.categoryRepository.findById(categoryId);
+        final Optional<Category> categoryOptional = this.categoryRepository.findCategoryByIdAndActiveTrue(categoryId);
 
         if (!categoryOptional.isPresent()) {
             throw new CategoryNotFoundException("Categoria não existe");
