@@ -46,7 +46,7 @@ public class CategoryBO implements ICategoryBO {
 
     @Override
     public List<ReadCategoryResponseDTO> listAllCategory() {
-        final List<Category> allCategories = this.categoryRepository.findAll();
+        final List<Category> allCategories = this.categoryRepository.findAllByActiveTrue();
 
         final List<ReadCategoryResponseDTO> categoriesDTO = allCategories
                 .stream()

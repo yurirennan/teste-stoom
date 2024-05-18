@@ -53,7 +53,7 @@ public class BrandBO implements IBrandBO {
 
     @Override
     public List<ReadBrandResponseDTO> listAllBrands() {
-        final List<Brand> brands = this.brandRepository.findAll();
+        final List<Brand> brands = this.brandRepository.findAllByActiveTrue();
 
         return brands
                 .stream()
