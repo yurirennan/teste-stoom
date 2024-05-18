@@ -40,8 +40,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
             ProductNotFoundException.class,
             CategoryNotFoundException.class,
             BrandNotFoundException.class})
-    public ResponseEntity<ApiError> handleUserNotFoundException(
-            ProductNotFoundException exception) {
+    public ResponseEntity<ApiError> handleUserNotFoundException(final RuntimeException exception) {
 
         ApiError apiErrorMessage = new ApiError(HttpStatus.NOT_FOUND, exception.toString(), exception.getMessage());
 
