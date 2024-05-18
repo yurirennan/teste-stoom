@@ -1,6 +1,8 @@
 package br.com.stoom.store.repository;
 
 import br.com.stoom.store.model.Category;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -18,6 +20,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     Optional<Category> findCategoryByIdAndActiveTrue(final Long categoryId);
 
-    List<Category> findAllByActiveTrue();
+    Page<Category> findAllByActiveTrue(Pageable pageable);
 
 }

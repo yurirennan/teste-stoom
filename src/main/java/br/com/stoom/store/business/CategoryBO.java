@@ -8,6 +8,9 @@ import br.com.stoom.store.exceptions.category.CategoryNotFoundException;
 import br.com.stoom.store.model.Category;
 import br.com.stoom.store.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -45,14 +48,15 @@ public class CategoryBO implements ICategoryBO {
     }
 
     @Override
-    public List<ReadCategoryResponseDTO> listAllCategory() {
-        final List<Category> allCategories = this.categoryRepository.findAllByActiveTrue();
+    public Page<ReadCategoryResponseDTO> listAllCategory(Pageable pageable) {
+        final Page<Category> categoryPage = this.categoryRepository.findAllByActiveTrue(pageable);
 
-        final List<ReadCategoryResponseDTO> categoriesDTO = allCategories
+        final List<ReadCategoryResponseDTO> categoriesDTO = categoryPage
+                .getContent()
                 .stream()
                 .map(ReadCategoryResponseDTO::fromCategory).collect(Collectors.toList());
 
-        return categoriesDTO;
+        return new PageImpl<>(categoriesDTO, categoryPage.getPageable(), categoryPage.getTotalElements());
     }
 
     @Override

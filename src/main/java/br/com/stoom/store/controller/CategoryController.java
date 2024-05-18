@@ -7,6 +7,8 @@ import br.com.stoom.store.dto.category.ReadCategoryResponseDTO;
 import br.com.stoom.store.dto.category.UpdateCategoryStatusDTO;
 import br.com.stoom.store.dto.product.ReadProductResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +42,8 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReadCategoryResponseDTO>> listAllCategory() {
-        final List<ReadCategoryResponseDTO> readCategoryResponseDTOS = this.categoryBO.listAllCategory();
+    public ResponseEntity<Page<ReadCategoryResponseDTO>> listAllCategory(Pageable pageable) {
+        final Page<ReadCategoryResponseDTO> readCategoryResponseDTOS = this.categoryBO.listAllCategory(pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(readCategoryResponseDTOS);
     }
