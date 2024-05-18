@@ -2,6 +2,8 @@ package br.com.stoom.store.repository;
 
 import br.com.stoom.store.model.Brand;
 import br.com.stoom.store.model.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,6 +21,6 @@ public interface BrandRepository extends JpaRepository<Brand, Long> {
 
     Optional<Brand> findBrandByIdAndActiveTrue(final Long brandId);
 
-    List<Brand> findAllByActiveTrue();
+    Page<Brand> findAllByActiveTrue(Pageable pageable);
 
 }

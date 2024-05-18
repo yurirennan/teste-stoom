@@ -14,6 +14,9 @@ import br.com.stoom.store.model.Category;
 import br.com.stoom.store.repository.BrandRepository;
 import br.com.stoom.store.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -52,13 +55,16 @@ public class BrandBO implements IBrandBO {
     }
 
     @Override
-    public List<ReadBrandResponseDTO> listAllBrands() {
-        final List<Brand> brands = this.brandRepository.findAllByActiveTrue();
+    public Page<ReadBrandResponseDTO> listAllBrands(Pageable pageable) {
+        final Page<Brand> brandsPage = this.brandRepository.findAllByActiveTrue(pageable);
 
-        return brands
+        final List<ReadBrandResponseDTO> readBrandResponseDTOList = brandsPage
+                .getContent()
                 .stream()
                 .map(ReadBrandResponseDTO::fromBrand)
                 .collect(Collectors.toList());
+
+        return new PageImpl<>(readBrandResponseDTOList, brandsPage.getPageable(), brandsPage.getTotalElements());
     }
 
     @Override

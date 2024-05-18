@@ -1,16 +1,14 @@
 package br.com.stoom.store.controller;
 
 import br.com.stoom.store.business.interfaces.IBrandBO;
-import br.com.stoom.store.business.interfaces.ICategoryBO;
 import br.com.stoom.store.business.interfaces.IProductBO;
 import br.com.stoom.store.dto.brand.CreateBrandRequestDTO;
 import br.com.stoom.store.dto.brand.ReadBrandResponseDTO;
 import br.com.stoom.store.dto.brand.UpdateBrandStatusDTO;
-import br.com.stoom.store.dto.category.CreateCategoryRequestDTO;
-import br.com.stoom.store.dto.category.ReadCategoryResponseDTO;
-import br.com.stoom.store.dto.category.UpdateCategoryStatusDTO;
 import br.com.stoom.store.dto.product.ReadProductResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,8 +42,8 @@ public class BrandController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReadBrandResponseDTO>> listAllBrands() {
-        final List<ReadBrandResponseDTO> readBrandResponseDTOList = this.brandBO.listAllBrands();
+    public ResponseEntity<Page<ReadBrandResponseDTO>> listAllBrands(Pageable pageable) {
+        final Page<ReadBrandResponseDTO> readBrandResponseDTOList = this.brandBO.listAllBrands(pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(readBrandResponseDTOList);
     }

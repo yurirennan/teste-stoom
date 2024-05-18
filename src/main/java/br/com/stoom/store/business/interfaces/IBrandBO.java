@@ -6,6 +6,8 @@ import br.com.stoom.store.dto.brand.UpdateBrandStatusDTO;
 import br.com.stoom.store.dto.category.CreateCategoryRequestDTO;
 import br.com.stoom.store.dto.category.ReadCategoryResponseDTO;
 import br.com.stoom.store.dto.category.UpdateCategoryStatusDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -16,7 +18,7 @@ public interface IBrandBO {
 
     ReadBrandResponseDTO listBrand(final Long brandId);
 
-    List<ReadBrandResponseDTO> listAllBrands();
+    Page<ReadBrandResponseDTO> listAllBrands(Pageable pageable);
 
     void updateBrandStatus(final Long brandId, final UpdateBrandStatusDTO updateBrandStatusDTO);
 
