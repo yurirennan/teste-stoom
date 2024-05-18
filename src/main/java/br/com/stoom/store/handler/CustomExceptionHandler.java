@@ -1,7 +1,9 @@
 package br.com.stoom.store.handler;
 
 import br.com.stoom.store.exceptions.ApiError;
+import br.com.stoom.store.exceptions.brand.BrandNotExistsException;
 import br.com.stoom.store.exceptions.brand.BrandNotFoundException;
+import br.com.stoom.store.exceptions.category.CategoryNotExistsException;
 import br.com.stoom.store.exceptions.category.CategoryNotFoundException;
 import br.com.stoom.store.exceptions.product.ProductNotFoundException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -40,9 +42,19 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
             ProductNotFoundException.class,
             CategoryNotFoundException.class,
             BrandNotFoundException.class})
-    public ResponseEntity<ApiError> handleUserNotFoundException(final RuntimeException exception) {
+    public ResponseEntity<ApiError> handleNotFoundException(final RuntimeException exception) {
 
         ApiError apiErrorMessage = new ApiError(HttpStatus.NOT_FOUND, exception.toString(), exception.getMessage());
+
+        return new ResponseEntity<>(apiErrorMessage, new HttpHeaders(), apiErrorMessage.getStatus());
+    }
+
+    @ExceptionHandler({
+            CategoryNotExistsException.class,
+            BrandNotExistsException.class})
+    public ResponseEntity<ApiError> handleNotExistsException(final RuntimeException exception) {
+
+        ApiError apiErrorMessage = new ApiError(HttpStatus.BAD_REQUEST, exception.toString(), exception.getMessage());
 
         return new ResponseEntity<>(apiErrorMessage, new HttpHeaders(), apiErrorMessage.getStatus());
     }

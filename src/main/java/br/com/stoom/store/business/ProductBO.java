@@ -4,7 +4,9 @@ import br.com.stoom.store.business.interfaces.IProductBO;
 import br.com.stoom.store.dto.product.CreateProductRequestDTO;
 import br.com.stoom.store.dto.product.ReadProductResponseDTO;
 import br.com.stoom.store.dto.product.UpdateProductStatusDTO;
+import br.com.stoom.store.exceptions.brand.BrandNotExistsException;
 import br.com.stoom.store.exceptions.brand.BrandNotFoundException;
+import br.com.stoom.store.exceptions.category.CategoryNotExistsException;
 import br.com.stoom.store.exceptions.category.CategoryNotFoundException;
 import br.com.stoom.store.exceptions.product.ProductNotFoundException;
 import br.com.stoom.store.model.Brand;
@@ -46,6 +48,21 @@ public class ProductBO implements IProductBO {
 
     @Override
     public void saveProduct(final CreateProductRequestDTO createProductRequestDTO) {
+
+        final Optional<Brand> brandOptional =
+                this.brandRepository.findBrandByIdAndActiveTrue(createProductRequestDTO.getBrandId());
+
+        if (!brandOptional.isPresent()) {
+            throw new BrandNotExistsException("Brand Not Exists!");
+        }
+
+        final Optional<Category> categoryOptional =
+                this.categoryRepository.findCategoryByIdAndActiveTrue(createProductRequestDTO.getCategoryId());
+
+        if (!categoryOptional.isPresent()) {
+            throw new CategoryNotExistsException("Category Not Exists!");
+        }
+
         final Product product = createProductRequestDTO.toProduct();
         this.productRepository.save(product);
     }
