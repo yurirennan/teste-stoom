@@ -39,7 +39,7 @@ public class ProductBO implements IProductBO {
 
     @Override
     public List<ReadProductResponseDTO> findAll(){
-        final List<Product> productList = productRepository.findAll();
+        final List<Product> productList = this.productRepository.findAllByActiveTrue();
 
         return productList.stream().map(ReadProductResponseDTO::fromProduct).collect(Collectors.toList());
     }
@@ -66,11 +66,25 @@ public class ProductBO implements IProductBO {
     @Override
     @Transactional
     public void updateProductStatus(final Long productId, final UpdateProductStatusDTO updateProductStatusDTO) {
+        final Optional<Product> productOptional =
+                this.productRepository.findProductByIdAndActiveTrue(productId);
+
+        if (!productOptional.isPresent()) {
+            throw new ProductNotFoundException("Product Not Found!");
+        }
+
         this.productRepository.updateProductStatusById(productId, updateProductStatusDTO.getStatus());
     }
 
     @Override
     public void deleteProduct(final Long productId) {
+        final Optional<Product> productOptional =
+                this.productRepository.findProductByIdAndActiveTrue(productId);
+
+        if (!productOptional.isPresent()) {
+            throw new ProductNotFoundException("Product Not Found!");
+        }
+
         this.productRepository.deleteById(productId);
     }
 
