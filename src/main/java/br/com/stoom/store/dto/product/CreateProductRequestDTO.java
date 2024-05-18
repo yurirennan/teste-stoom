@@ -6,17 +6,24 @@ import br.com.stoom.store.model.Category;
 import br.com.stoom.store.model.Product;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Objects;
 
 public class CreateProductRequestDTO {
 
+    @NotBlank(message = "sku is mandatory")
     private String sku;
+    @NotBlank(message = "name is mandatory")
     private String name;
+    @NotNull(message = "price is mandatory")
     private BigDecimal price;
     @JsonProperty("category_id")
+    @NotBlank(message = "category_id is mandatory")
     private Long categoryId;
     @JsonProperty("brand_id")
+    @NotBlank(message = "brand_id is mandatory")
     private Long brandId;
 
     public CreateProductRequestDTO() {

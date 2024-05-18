@@ -1,9 +1,11 @@
 package br.com.stoom.store.dto.product;
 
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 public class UpdateProductStatusDTO {
 
+    @NotNull(message = "status is mandatory")
     private boolean status;
 
     public UpdateProductStatusDTO() {

@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -33,7 +34,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createProduct(@RequestBody final CreateProductRequestDTO createProductRequestDTO) {
+    public ResponseEntity<Void> createProduct(@RequestBody @Valid final CreateProductRequestDTO createProductRequestDTO) {
         this.productService.saveProduct(createProductRequestDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -48,7 +49,7 @@ public class ProductController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateProductStatus(@PathVariable("id") final Long productId,
-                                                    @RequestBody final UpdateProductStatusDTO updateProductStatusDTO) {
+                                                    @RequestBody @Valid final UpdateProductStatusDTO updateProductStatusDTO) {
         this.productService.updateProductStatus(productId, updateProductStatusDTO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
