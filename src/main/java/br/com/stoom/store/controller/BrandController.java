@@ -2,12 +2,14 @@ package br.com.stoom.store.controller;
 
 import br.com.stoom.store.business.interfaces.IBrandBO;
 import br.com.stoom.store.business.interfaces.ICategoryBO;
+import br.com.stoom.store.business.interfaces.IProductBO;
 import br.com.stoom.store.dto.brand.CreateBrandRequestDTO;
 import br.com.stoom.store.dto.brand.ReadBrandResponseDTO;
 import br.com.stoom.store.dto.brand.UpdateBrandStatusDTO;
 import br.com.stoom.store.dto.category.CreateCategoryRequestDTO;
 import br.com.stoom.store.dto.category.ReadCategoryResponseDTO;
 import br.com.stoom.store.dto.category.UpdateCategoryStatusDTO;
+import br.com.stoom.store.dto.product.ReadProductResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +22,12 @@ import java.util.List;
 public class BrandController {
 
     private final IBrandBO brandBO;
+    private final IProductBO productBO;
 
     @Autowired
-    public BrandController(final IBrandBO brandBO) {
+    public BrandController(final IBrandBO brandBO, final IProductBO productBO) {
         this.brandBO = brandBO;
+        this.productBO = productBO;
     }
 
     @PostMapping()
@@ -53,4 +57,10 @@ public class BrandController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @GetMapping("/{id}/products")
+    public ResponseEntity<List<ReadProductResponseDTO>> listAllProductsByBrand(@PathVariable("id") final Long brandId) {
+        final List<ReadProductResponseDTO> readProductResponseDTOS = this.productBO.listAllProductsByBrand(brandId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(readProductResponseDTOS);
+    }
 }
