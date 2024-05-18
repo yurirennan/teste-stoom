@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -29,7 +30,7 @@ public class CategoryController {
     }
 
     @PostMapping()
-    public ResponseEntity<Void> saveCategory(@RequestBody CreateCategoryRequestDTO categoryRequestDTO) {
+    public ResponseEntity<Void> saveCategory(@RequestBody @Valid CreateCategoryRequestDTO categoryRequestDTO) {
         this.categoryBO.createCategory(categoryRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -50,7 +51,7 @@ public class CategoryController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateCategoryStatus(@PathVariable("id") final Long categoryId,
-                                                     @RequestBody final UpdateCategoryStatusDTO updateCategoryStatusDTO) {
+                                                     @RequestBody @Valid final UpdateCategoryStatusDTO updateCategoryStatusDTO) {
         this.categoryBO.updateCategoryStatus(categoryId, updateCategoryStatusDTO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

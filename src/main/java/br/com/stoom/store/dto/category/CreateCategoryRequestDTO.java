@@ -2,11 +2,14 @@ package br.com.stoom.store.dto.category;
 
 import br.com.stoom.store.model.Category;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 public class CreateCategoryRequestDTO {
 
+    @NotBlank(message = "name is mandatory")
     private String name;
+    @NotBlank(message = "description is mandatory")
     private String description;
 
     public CreateCategoryRequestDTO() {
