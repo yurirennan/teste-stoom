@@ -4,6 +4,7 @@ import br.com.stoom.store.business.interfaces.ICategoryBO;
 import br.com.stoom.store.dto.category.CreateCategoryRequestDTO;
 import br.com.stoom.store.dto.category.ReadCategoryResponseDTO;
 import br.com.stoom.store.dto.category.UpdateCategoryStatusDTO;
+import br.com.stoom.store.exceptions.category.CategoryNotFoundException;
 import br.com.stoom.store.model.Category;
 import br.com.stoom.store.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class CategoryBO implements ICategoryBO {
         final Optional<Category> categoryOptional = this.categoryRepository.findById(categoryId);
 
         if (!categoryOptional.isPresent()) {
-            throw new RuntimeException("Categoria não existe");
+            throw new CategoryNotFoundException("Categoria não existe");
         }
 
         final Category category = categoryOptional.get();

@@ -8,6 +8,7 @@ import br.com.stoom.store.dto.brand.UpdateBrandStatusDTO;
 import br.com.stoom.store.dto.category.CreateCategoryRequestDTO;
 import br.com.stoom.store.dto.category.ReadCategoryResponseDTO;
 import br.com.stoom.store.dto.category.UpdateCategoryStatusDTO;
+import br.com.stoom.store.exceptions.brand.BrandNotFoundException;
 import br.com.stoom.store.model.Brand;
 import br.com.stoom.store.model.Category;
 import br.com.stoom.store.repository.BrandRepository;
@@ -42,7 +43,7 @@ public class BrandBO implements IBrandBO {
         final Optional<Brand> brandOptional = this.brandRepository.findById(brandId);
 
         if (!brandOptional.isPresent()) {
-            throw new RuntimeException("Brand Not Found!");
+            throw new BrandNotFoundException("Brand Not Found!");
         }
 
         final Brand brand = brandOptional.get();

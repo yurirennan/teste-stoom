@@ -4,6 +4,7 @@ import br.com.stoom.store.business.interfaces.IProductBO;
 import br.com.stoom.store.dto.product.CreateProductRequestDTO;
 import br.com.stoom.store.dto.product.ReadProductResponseDTO;
 import br.com.stoom.store.dto.product.UpdateProductStatusDTO;
+import br.com.stoom.store.exceptions.product.ProductNotFoundException;
 import br.com.stoom.store.model.Product;
 import br.com.stoom.store.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 @Service
 public class ProductBO implements IProductBO {
 
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
     @Autowired
     public ProductBO(final ProductRepository productRepository) {
@@ -39,10 +40,10 @@ public class ProductBO implements IProductBO {
 
     @Override
     public ReadProductResponseDTO listProduct(final Long productId) {
-        final Optional<Product> productOptional = this.productRepository.findById(productId);
+        final Optional<Product> productOptional = this.productRepository.findProductByIdAndActiveTrue(productId);
 
         if (!productOptional.isPresent()) {
-            throw new RuntimeException("Product Not Found!");
+            throw new ProductNotFoundException("Product Not Found!");
         }
 
         final Product product = productOptional.get();
