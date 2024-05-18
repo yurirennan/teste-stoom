@@ -56,8 +56,8 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}/products")
-    public ResponseEntity<List<ReadProductResponseDTO>> listAllProductsByCategory(@PathVariable("id") final Long categoryId) {
-        final List<ReadProductResponseDTO> readProductResponseDTOS = this.productBO.listAllProductsByCategory(categoryId);
+    public ResponseEntity<Page<ReadProductResponseDTO>> listAllProductsByCategory(@PathVariable("id") final Long categoryId, final Pageable pageable) {
+        final Page<ReadProductResponseDTO> readProductResponseDTOS = this.productBO.listAllProductsByCategory(categoryId, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(readProductResponseDTOS);
     }
