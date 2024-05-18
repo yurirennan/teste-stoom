@@ -20,4 +20,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findAllByCategoryIdAndActiveTrue(final Long categoryId);
 
+    List<Product> findAllByActiveTrue();
+
 }
