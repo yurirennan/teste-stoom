@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -17,5 +18,7 @@ public interface BrandRepository extends JpaRepository<Brand, Long> {
     void updateBrandStatusById(final Long brandId, final boolean status);
 
     Optional<Brand> findBrandByIdAndActiveTrue(final Long brandId);
+
+    List<Brand> findAllByActiveTrue();
 
 }
