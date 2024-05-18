@@ -81,4 +81,14 @@ public class Brand {
     public int hashCode() {
         return Objects.hash(id, name, description, active, products);
     }
+
+    public static Brand of(final Long id) {
+        final Brand brand = new Brand();
+
+        brand.setId(id);
+
+        return brand;
+    }
+
+
 }

@@ -89,4 +89,13 @@ public class Category {
     public int hashCode() {
         return Objects.hash(id, name, description, active, products);
     }
+
+    public static Category of(final Long id) {
+        final Category category = new Category();
+
+        category.setId(id);
+
+        return category;
+    }
+
 }
