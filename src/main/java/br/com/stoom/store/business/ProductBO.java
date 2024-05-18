@@ -4,8 +4,11 @@ import br.com.stoom.store.business.interfaces.IProductBO;
 import br.com.stoom.store.dto.product.CreateProductRequestDTO;
 import br.com.stoom.store.dto.product.ReadProductResponseDTO;
 import br.com.stoom.store.dto.product.UpdateProductStatusDTO;
+import br.com.stoom.store.exceptions.brand.BrandNotFoundException;
 import br.com.stoom.store.exceptions.product.ProductNotFoundException;
+import br.com.stoom.store.model.Brand;
 import br.com.stoom.store.model.Product;
+import br.com.stoom.store.repository.BrandRepository;
 import br.com.stoom.store.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,10 +22,12 @@ import java.util.stream.Collectors;
 public class ProductBO implements IProductBO {
 
     private final ProductRepository productRepository;
+    private final BrandRepository brandRepository;
 
     @Autowired
-    public ProductBO(final ProductRepository productRepository) {
+    public ProductBO(final ProductRepository productRepository, final BrandRepository brandRepository) {
         this.productRepository = productRepository;
+        this.brandRepository = brandRepository;
     }
 
     @Override
@@ -60,6 +65,20 @@ public class ProductBO implements IProductBO {
     @Override
     public void deleteProduct(final Long productId) {
         this.productRepository.deleteById(productId);
+    }
+
+    @Override
+    public List<ReadProductResponseDTO> listAllProductsByBrand(final Long brandId) {
+        final Optional<Brand> brandOptional = this.brandRepository.findBrandByIdAndActiveTrue(brandId);
+
+        if (!brandOptional.isPresent()) {
+            throw new BrandNotFoundException("Brand Not Found!");
+        }
+        final Brand brand = brandOptional.get();
+
+        final List<Product> products = this.productRepository.findAllByBrandIdAndActiveTrue(brand.getId());
+
+        return products.stream().map(ReadProductResponseDTO::fromProduct).collect(Collectors.toList());
     }
 
 }

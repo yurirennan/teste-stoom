@@ -19,4 +19,5 @@ public interface IProductBO {
 
     void deleteProduct(final Long productId);
 
+    List<ReadProductResponseDTO> listAllProductsByBrand(final Long brandId);
 }

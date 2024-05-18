@@ -40,7 +40,7 @@ public class BrandBO implements IBrandBO {
 
     @Override
     public ReadBrandResponseDTO listBrand(final Long brandId) {
-        final Optional<Brand> brandOptional = this.brandRepository.findById(brandId);
+        final Optional<Brand> brandOptional = this.brandRepository.findBrandByIdAndActiveTrue(brandId);
 
         if (!brandOptional.isPresent()) {
             throw new BrandNotFoundException("Brand Not Found!");
