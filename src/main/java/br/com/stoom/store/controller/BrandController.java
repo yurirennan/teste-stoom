@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -29,7 +30,7 @@ public class BrandController {
     }
 
     @PostMapping()
-    public ResponseEntity<Void> saveBrand(@RequestBody CreateBrandRequestDTO createBrandRequestDTO) {
+    public ResponseEntity<Void> saveBrand(@RequestBody @Valid CreateBrandRequestDTO createBrandRequestDTO) {
         this.brandBO.createBrand(createBrandRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -42,7 +43,7 @@ public class BrandController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ReadBrandResponseDTO>> listAllBrands(Pageable pageable) {
+    public ResponseEntity<Page<ReadBrandResponseDTO>> listAllBrands(final Pageable pageable) {
         final Page<ReadBrandResponseDTO> readBrandResponseDTOList = this.brandBO.listAllBrands(pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(readBrandResponseDTOList);
@@ -50,7 +51,7 @@ public class BrandController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateBrandStatus(@PathVariable("id") final Long brandId,
-                                                  @RequestBody final UpdateBrandStatusDTO updateBrandStatusDTO) {
+                                                  @RequestBody @Valid final UpdateBrandStatusDTO updateBrandStatusDTO) {
         this.brandBO.updateBrandStatus(brandId, updateBrandStatusDTO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

@@ -3,11 +3,14 @@ package br.com.stoom.store.dto.brand;
 import br.com.stoom.store.model.Brand;
 import br.com.stoom.store.model.Category;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 public class CreateBrandRequestDTO {
 
+    @NotBlank(message = "name is mandatory")
     private String name;
+    @NotBlank(message = "description is mandatory")
     private String description;
 
     public CreateBrandRequestDTO() {
