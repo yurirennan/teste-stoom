@@ -5,6 +5,8 @@ import br.com.stoom.store.dto.product.CreateProductRequestDTO;
 import br.com.stoom.store.dto.product.ReadProductResponseDTO;
 import br.com.stoom.store.dto.product.UpdateProductStatusDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,7 +18,7 @@ import java.util.List;
 @RequestMapping("/api/products")
 public class ProductController {
 
-    private IProductBO productService;
+    private final IProductBO productService;
 
     @Autowired
     public ProductController(final IProductBO productService) {
@@ -24,8 +26,8 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReadProductResponseDTO>> findAll() {
-        final List<ReadProductResponseDTO> readProductResponseDTOS = productService.findAll();
+    public ResponseEntity<Page<ReadProductResponseDTO>> findAll(final Pageable pageable) {
+        final Page<ReadProductResponseDTO> readProductResponseDTOS = productService.findAll(pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(readProductResponseDTOS);
     }

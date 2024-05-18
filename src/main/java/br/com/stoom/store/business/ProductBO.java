@@ -43,10 +43,16 @@ public class ProductBO implements IProductBO {
     }
 
     @Override
-    public List<ReadProductResponseDTO> findAll(){
-        final List<Product> productList = this.productRepository.findAllByActiveTrue();
+    public Page<ReadProductResponseDTO> findAll(final Pageable pageable){
+        final Page<Product> productPage = this.productRepository.findAllByActiveTrue(pageable);
 
-        return productList.stream().map(ReadProductResponseDTO::fromProduct).collect(Collectors.toList());
+        final List<ReadProductResponseDTO> readProductResponseDTOS = productPage
+                .getContent()
+                .stream()
+                .map(ReadProductResponseDTO::fromProduct)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(readProductResponseDTOS, productPage.getPageable(), productPage.getTotalElements());
     }
 
     @Override

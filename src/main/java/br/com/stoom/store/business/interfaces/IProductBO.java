@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface IProductBO {
 
-    List<ReadProductResponseDTO> findAll();
+    Page<ReadProductResponseDTO> findAll(final Pageable pageable);
 
     void saveProduct(final CreateProductRequestDTO createProductRequestDTO);
 
