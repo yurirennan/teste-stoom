@@ -32,7 +32,7 @@ public class CategoryController {
     @PostMapping()
     public ResponseEntity<Void> saveCategory(@RequestBody @Valid CreateCategoryRequestDTO categoryRequestDTO) {
         this.categoryBO.createCategory(categoryRequestDTO);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/{id}")
@@ -49,11 +49,11 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.OK).body(readCategoryResponseDTOS);
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Void> updateCategoryStatus(@PathVariable("id") final Long categoryId,
                                                      @RequestBody @Valid final UpdateCategoryStatusDTO updateCategoryStatusDTO) {
         this.categoryBO.updateCategoryStatus(categoryId, updateCategoryStatusDTO);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("/{id}/products")

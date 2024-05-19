@@ -1,9 +1,9 @@
 package br.com.stoom.store.category;
 
 import br.com.stoom.store.IntegrationTestInitializer;
-import br.com.stoom.store.dto.brand.CreateBrandRequestDTO;
-import br.com.stoom.store.dto.brand.ReadBrandResponseDTO;
-import br.com.stoom.store.dto.brand.UpdateBrandStatusDTO;
+import br.com.stoom.store.dto.category.CreateCategoryRequestDTO;
+import br.com.stoom.store.dto.category.ReadCategoryResponseDTO;
+import br.com.stoom.store.dto.category.UpdateCategoryStatusDTO;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -27,12 +27,12 @@ public class CategoryControllerTest extends IntegrationTestInitializer {
     private TestRestTemplate testRestTemplate;
 
     @Test
-    public void shouldBeAbleToCreateAnBrand() {
-        final String resourceLocation = "/api/brands/";
+    public void shouldBeAbleToCreateACategory() {
+        final String resourceLocation = "/api/categories/";
 
-        final CreateBrandRequestDTO brandRequestDTO = this.getBrandRequesDTO();
+        final CreateCategoryRequestDTO createCategoryRequest = this.getCategoryRequesDTO();
 
-        final HttpEntity<CreateBrandRequestDTO> httpEntity = new HttpEntity<>(brandRequestDTO);
+        final HttpEntity<CreateCategoryRequestDTO> httpEntity = new HttpEntity<>(createCategoryRequest);
 
         final ResponseEntity<Void> response = this.testRestTemplate
                 .exchange(
@@ -47,12 +47,12 @@ public class CategoryControllerTest extends IntegrationTestInitializer {
 
     @Test
     @Sql("/database/clear_database.sql")
-    public void shouldBeAbleToListAActiveBrand() {
-        final String resourceLocation = "/api/brands/";
+    public void shouldBeAbleToListAnActiveCategory() {
+        final String resourceLocation = "/api/categories/";
 
-        final CreateBrandRequestDTO brandRequestDTO = this.getBrandRequesDTO();
+        final CreateCategoryRequestDTO categoryRequestDTO = this.getCategoryRequesDTO();
 
-        final HttpEntity<CreateBrandRequestDTO> httpEntity = new HttpEntity<>(brandRequestDTO);
+        final HttpEntity<CreateCategoryRequestDTO> httpEntity = new HttpEntity<>(categoryRequestDTO);
 
         final ResponseEntity<Void> response = this.testRestTemplate
                 .exchange(
@@ -64,17 +64,17 @@ public class CategoryControllerTest extends IntegrationTestInitializer {
 
         assertEquals(response.getStatusCode(), HttpStatus.CREATED);
 
-        final String listBrandResource = "/api/brands/1";
+        final String listCategoryResource = "/api/categories/1";
 
-        final ResponseEntity<ReadBrandResponseDTO> readBrandResponseDTOResponseEntity = this.testRestTemplate
+        final ResponseEntity<ReadCategoryResponseDTO> readCategoryResponseDTOResponseEntity = this.testRestTemplate
                 .exchange(
-                        listBrandResource,
+                        listCategoryResource,
                         HttpMethod.GET,
                         httpEntity,
-                        ReadBrandResponseDTO.class
+                        ReadCategoryResponseDTO.class
                 );
 
-        final ReadBrandResponseDTO body = readBrandResponseDTOResponseEntity.getBody();
+        final ReadCategoryResponseDTO body = readCategoryResponseDTOResponseEntity.getBody();
         assertNotNull(body);
 
         assertEquals("Test Name", body.getName());
@@ -84,59 +84,72 @@ public class CategoryControllerTest extends IntegrationTestInitializer {
 
     @Test
     @Sql("/database/clear_database.sql")
-    public void shouldBeAbleToDeactivateAnBrand() {
-        final String resourceLocation = "/api/brands/";
+    public void shouldBeAbleToDeactivateACategory() {
+        /**
+         * Create Category
+         */
+        final String resourceLocation = "/api/categories/";
 
-        final CreateBrandRequestDTO brandRequestDTO = this.getBrandRequesDTO();
+        final CreateCategoryRequestDTO categoryRequestDTO = this.getCategoryRequesDTO();
 
-        final HttpEntity<CreateBrandRequestDTO> createBrandRequestDTOHttpEntity = new HttpEntity<>(brandRequestDTO);
+        final HttpEntity<CreateCategoryRequestDTO> createCategoryRequestDTOHttpEntity
+                = new HttpEntity<>(categoryRequestDTO);
 
         final ResponseEntity<Void> response = this.testRestTemplate
                 .exchange(
                         resourceLocation,
                         HttpMethod.POST,
-                        createBrandRequestDTOHttpEntity,
+                        createCategoryRequestDTOHttpEntity,
                         Void.class
                 );
 
         assertEquals(response.getStatusCode(), HttpStatus.CREATED);
 
-        final String listBrandResource = "/api/brands/1";
+        /**
+         * List Category
+         */
+        final String listCategoryResource = "/api/categories/1";
 
-        final ResponseEntity<ReadBrandResponseDTO> readBrandResponseDTOResponseEntity = this.testRestTemplate
+        final ResponseEntity<ReadCategoryResponseDTO> readCategoryResponseDTOResponseEntity = this.testRestTemplate
                 .exchange(
-                        listBrandResource,
+                        listCategoryResource,
                         HttpMethod.GET,
                         null,
-                        ReadBrandResponseDTO.class
+                        ReadCategoryResponseDTO.class
                 );
 
-        final ReadBrandResponseDTO body = readBrandResponseDTOResponseEntity.getBody();
+        final ReadCategoryResponseDTO body = readCategoryResponseDTOResponseEntity.getBody();
         assertNotNull(body);
 
         assertTrue(body.isActive());
 
-        final UpdateBrandStatusDTO updateBrandStatusDTO = new UpdateBrandStatusDTO(false);
+        /**
+         * Update status Category
+         */
+        final UpdateCategoryStatusDTO updateCategoryStatusDTO = new UpdateCategoryStatusDTO(false);
 
-        final HttpEntity<UpdateBrandStatusDTO> updateBrandStatusDTOHttpEntity =
-                new HttpEntity<>(updateBrandStatusDTO);
+        final HttpEntity<UpdateCategoryStatusDTO> updateCategoryStatusDTOHttpEntity =
+                new HttpEntity<>(updateCategoryStatusDTO);
 
         final ResponseEntity<Void> updateResponse = this.testRestTemplate
                 .exchange(
-                        listBrandResource,
+                        listCategoryResource,
                         HttpMethod.PUT,
-                        updateBrandStatusDTOHttpEntity,
+                        updateCategoryStatusDTOHttpEntity,
                         Void.class
                 );
 
         assertEquals(updateResponse.getStatusCode(), HttpStatus.NO_CONTENT);
 
-        final ResponseEntity<ReadBrandResponseDTO> readResponse = this.testRestTemplate
+        /**
+         * List Category
+         */
+        final ResponseEntity<ReadCategoryResponseDTO> readResponse = this.testRestTemplate
                 .exchange(
-                        listBrandResource,
+                        listCategoryResource,
                         HttpMethod.GET,
                         null,
-                        ReadBrandResponseDTO.class
+                        ReadCategoryResponseDTO.class
                 );
 
         assertEquals(readResponse.getStatusCode(), HttpStatus.NOT_FOUND);
@@ -144,89 +157,91 @@ public class CategoryControllerTest extends IntegrationTestInitializer {
 
     @Test
     @Sql("/database/clear_database.sql")
-    public void shouldBeAbleToActivateAnBrand() {
-        final String resourceLocation = "/api/brands/";
+    public void shouldBeAbleToActivateACategory() {
+        final String resourceLocation = "/api/categories/";
 
-        final CreateBrandRequestDTO brandRequestDTO = this.getBrandRequesDTO();
+        final CreateCategoryRequestDTO categoryRequestDTO = this.getCategoryRequesDTO();
 
-        final HttpEntity<CreateBrandRequestDTO> createBrandRequestDTOHttpEntity = new HttpEntity<>(brandRequestDTO);
+        final HttpEntity<CreateCategoryRequestDTO> createCategoryRequestDTOHttpEntity
+                = new HttpEntity<>(categoryRequestDTO);
 
         final ResponseEntity<Void> response = this.testRestTemplate
                 .exchange(
                         resourceLocation,
                         HttpMethod.POST,
-                        createBrandRequestDTOHttpEntity,
+                        createCategoryRequestDTOHttpEntity,
                         Void.class
                 );
 
         assertEquals(response.getStatusCode(), HttpStatus.CREATED);
 
-        final String listBrandResource = "/api/brands/1";
 
-        final ResponseEntity<ReadBrandResponseDTO> readBrandResponseDTOResponseEntity = this.testRestTemplate
+        final String listCategoriesResource = "/api/categories/1";
+
+        final ResponseEntity<ReadCategoryResponseDTO> readCategoryResponseDTOResponseEntity = this.testRestTemplate
                 .exchange(
-                        listBrandResource,
+                        listCategoriesResource,
                         HttpMethod.GET,
                         null,
-                        ReadBrandResponseDTO.class
+                        ReadCategoryResponseDTO.class
                 );
 
-        final ReadBrandResponseDTO body = readBrandResponseDTOResponseEntity.getBody();
+        final ReadCategoryResponseDTO body = readCategoryResponseDTOResponseEntity.getBody();
         assertNotNull(body);
 
         assertEquals("Test Name", body.getName());
         assertEquals("Test Description", body.getDescription());
         assertTrue(body.isActive());
 
-        final UpdateBrandStatusDTO updateBrandStatusDTO = new UpdateBrandStatusDTO(false);
+        final UpdateCategoryStatusDTO updateCategoryStatusDTO = new UpdateCategoryStatusDTO(false);
 
-        final HttpEntity<UpdateBrandStatusDTO> updateBrandStatusDTOHttpEntity =
-                new HttpEntity<>(updateBrandStatusDTO);
+        final HttpEntity<UpdateCategoryStatusDTO> updateCategoryStatusDTOHttpEntity =
+                new HttpEntity<>(updateCategoryStatusDTO);
 
         final ResponseEntity<Void> updateResponse = this.testRestTemplate
                 .exchange(
-                        listBrandResource,
+                        listCategoriesResource,
                         HttpMethod.PUT,
-                        updateBrandStatusDTOHttpEntity,
+                        updateCategoryStatusDTOHttpEntity,
                         Void.class
                 );
 
         assertEquals(updateResponse.getStatusCode(), HttpStatus.NO_CONTENT);
 
-        final ResponseEntity<ReadBrandResponseDTO> readResponse = this.testRestTemplate
+        final ResponseEntity<ReadCategoryResponseDTO> readResponse = this.testRestTemplate
                 .exchange(
-                        listBrandResource,
+                        listCategoriesResource,
                         HttpMethod.GET,
                         null,
-                        ReadBrandResponseDTO.class
+                        ReadCategoryResponseDTO.class
                 );
 
         assertEquals(readResponse.getStatusCode(), HttpStatus.NOT_FOUND);
 
-        final UpdateBrandStatusDTO updateBrandStatusDTO1 = new UpdateBrandStatusDTO(true);
+        final UpdateCategoryStatusDTO updateCategoryStatusDTO1 = new UpdateCategoryStatusDTO(true);
 
-        final HttpEntity<UpdateBrandStatusDTO> updateBrandStatusDTOHttpEntity1 =
-                new HttpEntity<>(updateBrandStatusDTO1);
+        final HttpEntity<UpdateCategoryStatusDTO> updateCategoryStatusDTOHttpEntity1 =
+                new HttpEntity<>(updateCategoryStatusDTO1);
 
         final ResponseEntity<Void> updateResponse2 = this.testRestTemplate
                 .exchange(
-                        listBrandResource,
+                        listCategoriesResource,
                         HttpMethod.PUT,
-                        updateBrandStatusDTOHttpEntity1,
+                        updateCategoryStatusDTOHttpEntity1,
                         Void.class
                 );
 
         assertEquals(updateResponse2.getStatusCode(), HttpStatus.NO_CONTENT);
 
-        final ResponseEntity<ReadBrandResponseDTO> readBrandResponseDTOResponseEntity1 = this.testRestTemplate
+        final ResponseEntity<ReadCategoryResponseDTO> readCategoryResponseDTOResponseEntity1 = this.testRestTemplate
                 .exchange(
-                        listBrandResource,
+                        listCategoriesResource,
                         HttpMethod.GET,
                         null,
-                        ReadBrandResponseDTO.class
+                        ReadCategoryResponseDTO.class
                 );
 
-        final ReadBrandResponseDTO responseDTO = readBrandResponseDTOResponseEntity1.getBody();
+        final ReadCategoryResponseDTO responseDTO = readCategoryResponseDTOResponseEntity1.getBody();
         assertNotNull(responseDTO);
 
         assertEquals("Test Name", responseDTO.getName());
@@ -236,12 +251,12 @@ public class CategoryControllerTest extends IntegrationTestInitializer {
 
     @Test
     @Sql("/database/clear_database.sql")
-    public void shouldNotBeAbleToListADesactiveBrand() {
-        final String resourceLocation = "/api/brands/";
+    public void shouldNotBeAbleToListADesactiveCategory() {
+        final String resourceLocation = "/api/categories/";
 
-        final CreateBrandRequestDTO createBrandRequestDTO = this.getBrandRequesDTO();
+        final CreateCategoryRequestDTO createCategoryRequestDTO = this.getCategoryRequesDTO();
 
-        final HttpEntity<CreateBrandRequestDTO> httpEntity = new HttpEntity<>(createBrandRequestDTO);
+        final HttpEntity<CreateCategoryRequestDTO> httpEntity = new HttpEntity<>(createCategoryRequestDTO);
 
         final ResponseEntity<Void> response = this.testRestTemplate
                 .exchange(
@@ -253,17 +268,17 @@ public class CategoryControllerTest extends IntegrationTestInitializer {
 
         assertEquals(response.getStatusCode(), HttpStatus.CREATED);
 
-        final String listBrandResource = "/api/brands/1";
+        final String listCategoryResource = "/api/categories/1";
 
-        final ResponseEntity<ReadBrandResponseDTO> readBrandResponse = this.testRestTemplate
+        final ResponseEntity<ReadCategoryResponseDTO> readCategoryResponseDTOResponseEntity = this.testRestTemplate
                 .exchange(
-                        listBrandResource,
+                        listCategoryResource,
                         HttpMethod.GET,
                         httpEntity,
-                        ReadBrandResponseDTO.class
+                        ReadCategoryResponseDTO.class
                 );
 
-        final ReadBrandResponseDTO body = readBrandResponse.getBody();
+        final ReadCategoryResponseDTO body = readCategoryResponseDTOResponseEntity.getBody();
         assertNotNull(body);
 
         assertEquals("Test Name", body.getName());
@@ -271,14 +286,14 @@ public class CategoryControllerTest extends IntegrationTestInitializer {
         assertTrue(body.isActive());
 
 
-        final UpdateBrandStatusDTO updateBrandStatusDTO = new UpdateBrandStatusDTO(false);
+        final UpdateCategoryStatusDTO updateCategoryStatusDTO = new UpdateCategoryStatusDTO(false);
 
-        final HttpEntity<UpdateBrandStatusDTO> updateBrandEntity =
-                new HttpEntity<>(updateBrandStatusDTO);
+        final HttpEntity<UpdateCategoryStatusDTO> updateBrandEntity =
+                new HttpEntity<>(updateCategoryStatusDTO);
 
         final ResponseEntity<Void> updateResponse = this.testRestTemplate
                 .exchange(
-                        listBrandResource,
+                        listCategoryResource,
                         HttpMethod.PUT,
                         updateBrandEntity,
                         Void.class
@@ -286,24 +301,24 @@ public class CategoryControllerTest extends IntegrationTestInitializer {
 
         assertEquals(updateResponse.getStatusCode(), HttpStatus.NO_CONTENT);
 
-        final ResponseEntity<ReadBrandResponseDTO> readBrandResponse2 = this.testRestTemplate
+        final ResponseEntity<ReadCategoryResponseDTO> readCategoryResponseDTOResponseEntity1 = this.testRestTemplate
                 .exchange(
-                        listBrandResource,
+                        listCategoryResource,
                         HttpMethod.GET,
                         httpEntity,
-                        ReadBrandResponseDTO.class
+                        ReadCategoryResponseDTO.class
                 );
 
-        assertEquals(readBrandResponse2.getStatusCode(), HttpStatus.NOT_FOUND);
+        assertEquals(readCategoryResponseDTOResponseEntity1.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 
-    private CreateBrandRequestDTO getBrandRequesDTO() {
-        final CreateBrandRequestDTO brandRequestDTO = new CreateBrandRequestDTO();
+    private CreateCategoryRequestDTO getCategoryRequesDTO() {
+        final CreateCategoryRequestDTO categoryRequestDTO = new CreateCategoryRequestDTO();
 
-        brandRequestDTO.setName("Test Name");
-        brandRequestDTO.setDescription("Test Description");
+        categoryRequestDTO.setName("Test Name");
+        categoryRequestDTO.setDescription("Test Description");
 
-        return brandRequestDTO;
+        return categoryRequestDTO;
     }
 
 }
