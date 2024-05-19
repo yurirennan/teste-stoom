@@ -27,6 +27,7 @@ public class CategoryControllerTest extends IntegrationTestInitializer {
     private TestRestTemplate testRestTemplate;
 
     @Test
+    @Sql("/database/clear_database.sql")
     public void shouldBeAbleToCreateACategory() {
         final String resourceLocation = "/api/categories/";
 
@@ -288,14 +289,14 @@ public class CategoryControllerTest extends IntegrationTestInitializer {
 
         final UpdateCategoryStatusDTO updateCategoryStatusDTO = new UpdateCategoryStatusDTO(false);
 
-        final HttpEntity<UpdateCategoryStatusDTO> updateBrandEntity =
+        final HttpEntity<UpdateCategoryStatusDTO> updateCategoryStatusDTOHttpEntity =
                 new HttpEntity<>(updateCategoryStatusDTO);
 
         final ResponseEntity<Void> updateResponse = this.testRestTemplate
                 .exchange(
                         listCategoryResource,
                         HttpMethod.PUT,
-                        updateBrandEntity,
+                        updateCategoryStatusDTOHttpEntity,
                         Void.class
                 );
 
