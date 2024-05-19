@@ -27,6 +27,7 @@ public class BrandControllerTest extends IntegrationTestInitializer {
     private TestRestTemplate testRestTemplate;
 
     @Test
+    @Sql("/database/clear_database.sql")
     public void shouldBeAbleToCreateAnBrand() {
         final String resourceLocation = "/api/brands/";
 

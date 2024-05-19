@@ -47,11 +47,11 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(readProductResponseDTO);
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Void> updateProductStatus(@PathVariable("id") final Long productId,
                                                     @RequestBody @Valid final UpdateProductStatusDTO updateProductStatusDTO) {
         this.productService.updateProductStatus(productId, updateProductStatusDTO);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping("/{id}")
