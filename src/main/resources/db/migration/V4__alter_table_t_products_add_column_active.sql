@@ -1,0 +1,1 @@
+ALTER TABLE t_products add active BOOLEAN NOT NULL DEFAULT true
