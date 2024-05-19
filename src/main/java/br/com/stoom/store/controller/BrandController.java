@@ -32,7 +32,7 @@ public class BrandController {
     @PostMapping()
     public ResponseEntity<Void> saveBrand(@RequestBody @Valid CreateBrandRequestDTO createBrandRequestDTO) {
         this.brandBO.createBrand(createBrandRequestDTO);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/{id}")
@@ -49,11 +49,11 @@ public class BrandController {
         return ResponseEntity.status(HttpStatus.OK).body(readBrandResponseDTOList);
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Void> updateBrandStatus(@PathVariable("id") final Long brandId,
                                                   @RequestBody @Valid final UpdateBrandStatusDTO updateBrandStatusDTO) {
         this.brandBO.updateBrandStatus(brandId, updateBrandStatusDTO);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("/{id}/products")
