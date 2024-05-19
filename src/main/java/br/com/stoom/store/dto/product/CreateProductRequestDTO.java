@@ -20,10 +20,10 @@ public class CreateProductRequestDTO {
     @NotNull(message = "price is mandatory")
     private BigDecimal price;
     @JsonProperty("category_id")
-    @NotBlank(message = "category_id is mandatory")
+    @NotNull(message = "category_id is mandatory")
     private Long categoryId;
     @JsonProperty("brand_id")
-    @NotBlank(message = "brand_id is mandatory")
+    @NotNull(message = "brand_id is mandatory")
     private Long brandId;
 
     public CreateProductRequestDTO() {
