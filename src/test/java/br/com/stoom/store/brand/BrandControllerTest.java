@@ -1,17 +1,22 @@
 package br.com.stoom.store.brand;
 
 import br.com.stoom.store.IntegrationTestInitializer;
+import br.com.stoom.store.dto.CustomPageImpl;
 import br.com.stoom.store.dto.brand.CreateBrandRequestDTO;
 import br.com.stoom.store.dto.brand.ReadBrandResponseDTO;
 import br.com.stoom.store.dto.brand.UpdateBrandStatusDTO;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -296,6 +301,102 @@ public class BrandControllerTest extends IntegrationTestInitializer {
                 );
 
         assertEquals(readBrandResponse2.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    @Sql("/database/clear_database.sql")
+    public void shouldBeAbleToListAllBrands() {
+        final String resourceLocation = "/api/brands";
+
+        final CreateBrandRequestDTO brandRequestDTO = this.getBrandRequesDTO();
+
+        final HttpEntity<CreateBrandRequestDTO> createBrandRequestDTOHttpEntity = new HttpEntity<>(brandRequestDTO);
+
+        this.testRestTemplate
+                .exchange(
+                        resourceLocation,
+                        HttpMethod.POST,
+                        createBrandRequestDTOHttpEntity,
+                        Void.class
+                );
+
+        this.testRestTemplate
+                .exchange(
+                        resourceLocation,
+                        HttpMethod.POST,
+                        createBrandRequestDTOHttpEntity,
+                        Void.class
+                );
+
+        final ResponseEntity<CustomPageImpl<ReadBrandResponseDTO>> brandsPage = this.testRestTemplate
+                .exchange(
+                        resourceLocation + "?page=0&size=5",
+                        HttpMethod.GET,
+                        null,
+                        new ParameterizedTypeReference<CustomPageImpl<ReadBrandResponseDTO>>() {}
+                );
+
+        final Page<ReadBrandResponseDTO> responseBody = brandsPage.getBody();
+        assertNotNull(responseBody);
+
+        final List<ReadBrandResponseDTO> brands = responseBody.getContent();
+        assertEquals(2, brands.size());
+    }
+
+    @Test
+    @Sql("/database/clear_database.sql")
+    public void shouldNotBeAbleToListDeactivateBrands() {
+        final String resourceLocation = "/api/brands";
+
+        final CreateBrandRequestDTO brandRequestDTO = this.getBrandRequesDTO();
+
+        final HttpEntity<CreateBrandRequestDTO> createBrandRequestDTOHttpEntity = new HttpEntity<>(brandRequestDTO);
+
+        this.testRestTemplate
+                .exchange(
+                        resourceLocation,
+                        HttpMethod.POST,
+                        createBrandRequestDTOHttpEntity,
+                        Void.class
+                );
+
+        this.testRestTemplate
+                .exchange(
+                        resourceLocation,
+                        HttpMethod.POST,
+                        createBrandRequestDTOHttpEntity,
+                        Void.class
+                );
+
+        final UpdateBrandStatusDTO updateBrandStatusDTO = new UpdateBrandStatusDTO(false);
+
+        final HttpEntity<UpdateBrandStatusDTO> updateBrandStatusDTOHttpEntity =
+                new HttpEntity<>(updateBrandStatusDTO);
+
+        this.testRestTemplate
+                .exchange(
+                        resourceLocation + "/2",
+                        HttpMethod.PUT,
+                        updateBrandStatusDTOHttpEntity,
+                        Void.class
+                );
+
+        final ResponseEntity<CustomPageImpl<ReadBrandResponseDTO>> brandsPage = this.testRestTemplate
+                .exchange(
+                        resourceLocation + "?page=0&size=5",
+                        HttpMethod.GET,
+                        null,
+                        new ParameterizedTypeReference<CustomPageImpl<ReadBrandResponseDTO>>() {}
+                );
+
+        final Page<ReadBrandResponseDTO> responseBody = brandsPage.getBody();
+        assertNotNull(responseBody);
+
+        final List<ReadBrandResponseDTO> brands = responseBody.getContent();
+        assertEquals(1, brands.size());
+
+        final ReadBrandResponseDTO readBrandResponseDTO = brands.get(0);
+        assertEquals(1L, readBrandResponseDTO.getId(), 0);
     }
 
     private CreateBrandRequestDTO getBrandRequesDTO() {
