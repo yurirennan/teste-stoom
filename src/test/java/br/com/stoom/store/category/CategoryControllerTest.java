@@ -2,9 +2,12 @@ package br.com.stoom.store.category;
 
 import br.com.stoom.store.IntegrationTestInitializer;
 import br.com.stoom.store.dto.CustomPageImpl;
+import br.com.stoom.store.dto.brand.CreateBrandRequestDTO;
 import br.com.stoom.store.dto.category.CreateCategoryRequestDTO;
 import br.com.stoom.store.dto.category.ReadCategoryResponseDTO;
 import br.com.stoom.store.dto.category.UpdateCategoryStatusDTO;
+import br.com.stoom.store.dto.product.CreateProductRequestDTO;
+import br.com.stoom.store.dto.product.ReadProductResponseDTO;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -16,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -402,6 +406,77 @@ public class CategoryControllerTest extends IntegrationTestInitializer {
         assertEquals(1L, readCategoryResponseDTO.getId(), 0);
     }
 
+    @Test
+    @Sql("/database/clear_database.sql")
+    public void shouldBeAbleToListAllProductsByCategory() {
+        final String brandResourceLocation = "/api/brands";
+
+        final CreateBrandRequestDTO brandRequestDTO = this.getBrandRequesDTO();
+
+        final HttpEntity<CreateBrandRequestDTO> createBrandRequestDTOHttpEntity = new HttpEntity<>(brandRequestDTO);
+
+        this.testRestTemplate
+                .exchange(
+                        brandResourceLocation,
+                        HttpMethod.POST,
+                        createBrandRequestDTOHttpEntity,
+                        Void.class
+                );
+
+        final String categoryResourceLocation = "/api/categories";
+
+        final CreateCategoryRequestDTO categoryRequestDTO = this.getCategoryRequesDTO();
+
+        final HttpEntity<CreateCategoryRequestDTO> createCategoryRequestDTOHttpEntity
+                = new HttpEntity<>(categoryRequestDTO);
+
+        this.testRestTemplate
+                .exchange(
+                        categoryResourceLocation,
+                        HttpMethod.POST,
+                        createCategoryRequestDTOHttpEntity,
+                        Void.class
+                );
+
+        final String productsResourceLocation = "/api/products";
+
+        final CreateProductRequestDTO productRequestDTO = this.getProductRequesDTO();
+
+        final HttpEntity<CreateProductRequestDTO> createProductRequestDTOHttpEntity
+                = new HttpEntity<>(productRequestDTO);
+
+        this.testRestTemplate
+                .exchange(
+                        productsResourceLocation,
+                        HttpMethod.POST,
+                        createProductRequestDTOHttpEntity,
+                        new ParameterizedTypeReference<CustomPageImpl<ReadProductResponseDTO>>() {}
+                );
+
+        this.testRestTemplate
+                .exchange(
+                        productsResourceLocation,
+                        HttpMethod.POST,
+                        createProductRequestDTOHttpEntity,
+                        new ParameterizedTypeReference<CustomPageImpl<ReadProductResponseDTO>>() {}
+                );
+
+        final ResponseEntity<CustomPageImpl<ReadProductResponseDTO>> productsPage = this.testRestTemplate
+                .exchange(
+                        categoryResourceLocation + "/1/products",
+                        HttpMethod.GET,
+                        null,
+                        new ParameterizedTypeReference<CustomPageImpl<ReadProductResponseDTO>>() {
+                        }
+                );
+
+        final Page<ReadProductResponseDTO> responseBody = productsPage.getBody();
+        assertNotNull(responseBody);
+
+        final List<ReadProductResponseDTO> products = responseBody.getContent();
+        assertEquals(2, products.size());
+    }
+
     private CreateCategoryRequestDTO getCategoryRequesDTO() {
         final CreateCategoryRequestDTO categoryRequestDTO = new CreateCategoryRequestDTO();
 
@@ -409,6 +484,27 @@ public class CategoryControllerTest extends IntegrationTestInitializer {
         categoryRequestDTO.setDescription("Test Description");
 
         return categoryRequestDTO;
+    }
+
+    private CreateProductRequestDTO getProductRequesDTO() {
+        final CreateProductRequestDTO productRequestDTO = new CreateProductRequestDTO();
+
+        productRequestDTO.setName("Test Name");
+        productRequestDTO.setSku("Test Sku");
+        productRequestDTO.setPrice(BigDecimal.valueOf(10.99));
+        productRequestDTO.setBrandId(1L);
+        productRequestDTO.setCategoryId(1L);
+
+        return productRequestDTO;
+    }
+
+    private CreateBrandRequestDTO getBrandRequesDTO() {
+        final CreateBrandRequestDTO brandRequestDTO = new CreateBrandRequestDTO();
+
+        brandRequestDTO.setName("Test Name");
+        brandRequestDTO.setDescription("Test Description");
+
+        return brandRequestDTO;
     }
 
 }
