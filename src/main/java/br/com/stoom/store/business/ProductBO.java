@@ -93,7 +93,7 @@ public class ProductBO implements IProductBO {
     @Transactional
     public void updateProductStatus(final Long productId, final UpdateProductStatusDTO updateProductStatusDTO) {
         final Optional<Product> productOptional =
-                this.productRepository.findProductByIdAndActiveTrue(productId);
+                this.productRepository.findById(productId);
 
         if (!productOptional.isPresent()) {
             throw new ProductNotFoundException("Product Not Found!");
