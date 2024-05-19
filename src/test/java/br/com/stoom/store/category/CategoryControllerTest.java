@@ -1,17 +1,22 @@
 package br.com.stoom.store.category;
 
 import br.com.stoom.store.IntegrationTestInitializer;
+import br.com.stoom.store.dto.CustomPageImpl;
 import br.com.stoom.store.dto.category.CreateCategoryRequestDTO;
 import br.com.stoom.store.dto.category.ReadCategoryResponseDTO;
 import br.com.stoom.store.dto.category.UpdateCategoryStatusDTO;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -86,9 +91,6 @@ public class CategoryControllerTest extends IntegrationTestInitializer {
     @Test
     @Sql("/database/clear_database.sql")
     public void shouldBeAbleToDeactivateACategory() {
-        /**
-         * Create Category
-         */
         final String resourceLocation = "/api/categories/";
 
         final CreateCategoryRequestDTO categoryRequestDTO = this.getCategoryRequesDTO();
@@ -106,9 +108,6 @@ public class CategoryControllerTest extends IntegrationTestInitializer {
 
         assertEquals(response.getStatusCode(), HttpStatus.CREATED);
 
-        /**
-         * List Category
-         */
         final String listCategoryResource = "/api/categories/1";
 
         final ResponseEntity<ReadCategoryResponseDTO> readCategoryResponseDTOResponseEntity = this.testRestTemplate
@@ -124,9 +123,6 @@ public class CategoryControllerTest extends IntegrationTestInitializer {
 
         assertTrue(body.isActive());
 
-        /**
-         * Update status Category
-         */
         final UpdateCategoryStatusDTO updateCategoryStatusDTO = new UpdateCategoryStatusDTO(false);
 
         final HttpEntity<UpdateCategoryStatusDTO> updateCategoryStatusDTOHttpEntity =
@@ -142,9 +138,6 @@ public class CategoryControllerTest extends IntegrationTestInitializer {
 
         assertEquals(updateResponse.getStatusCode(), HttpStatus.NO_CONTENT);
 
-        /**
-         * List Category
-         */
         final ResponseEntity<ReadCategoryResponseDTO> readResponse = this.testRestTemplate
                 .exchange(
                         listCategoryResource,
@@ -311,6 +304,102 @@ public class CategoryControllerTest extends IntegrationTestInitializer {
                 );
 
         assertEquals(readCategoryResponseDTOResponseEntity1.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    @Sql("/database/clear_database.sql")
+    public void shouldBeAbleToListAllCategories() {
+        final String resourceLocation = "/api/categories";
+
+        final CreateCategoryRequestDTO createCategoryRequestDTO = this.getCategoryRequesDTO();
+
+        final HttpEntity<CreateCategoryRequestDTO> httpEntity = new HttpEntity<>(createCategoryRequestDTO);
+
+        this.testRestTemplate
+                .exchange(
+                        resourceLocation,
+                        HttpMethod.POST,
+                        httpEntity,
+                        Void.class
+                );
+
+        this.testRestTemplate
+                .exchange(
+                        resourceLocation,
+                        HttpMethod.POST,
+                        httpEntity,
+                        Void.class
+                );
+
+        final ResponseEntity<CustomPageImpl<ReadCategoryResponseDTO>> categoriesPage = this.testRestTemplate
+                .exchange(
+                        resourceLocation + "?page=0&size=5",
+                        HttpMethod.GET,
+                        null,
+                        new ParameterizedTypeReference<CustomPageImpl<ReadCategoryResponseDTO>>() {}
+                );
+
+        final Page<ReadCategoryResponseDTO> responseBody = categoriesPage.getBody();
+        assertNotNull(responseBody);
+
+        final List<ReadCategoryResponseDTO> categories = responseBody.getContent();
+        assertEquals(2, categories.size());
+    }
+
+    @Test
+    @Sql("/database/clear_database.sql")
+    public void shouldNotBeAbleToListDeactivateCategories() {
+        final String resourceLocation = "/api/categories";
+
+        final CreateCategoryRequestDTO createCategoryRequestDTO = this.getCategoryRequesDTO();
+
+        final HttpEntity<CreateCategoryRequestDTO> httpEntity = new HttpEntity<>(createCategoryRequestDTO);
+
+        this.testRestTemplate
+                .exchange(
+                        resourceLocation,
+                        HttpMethod.POST,
+                        httpEntity,
+                        Void.class
+                );
+
+        this.testRestTemplate
+                .exchange(
+                        resourceLocation,
+                        HttpMethod.POST,
+                        httpEntity,
+                        Void.class
+                );
+
+        final UpdateCategoryStatusDTO updateCategoryStatusDTO = new UpdateCategoryStatusDTO(false);
+
+        final HttpEntity<UpdateCategoryStatusDTO> updateCategoryStatusDTOHttpEntity =
+                new HttpEntity<>(updateCategoryStatusDTO);
+
+        this.testRestTemplate
+                .exchange(
+                        resourceLocation + "/2",
+                        HttpMethod.PUT,
+                        updateCategoryStatusDTOHttpEntity,
+                        Void.class
+                );
+
+        final ResponseEntity<CustomPageImpl<ReadCategoryResponseDTO>> categoriesPage = this.testRestTemplate
+                .exchange(
+                        resourceLocation + "?page=0&size=5",
+                        HttpMethod.GET,
+                        null,
+                        new ParameterizedTypeReference<CustomPageImpl<ReadCategoryResponseDTO>>() {}
+                );
+
+        final Page<ReadCategoryResponseDTO> responseBody = categoriesPage.getBody();
+        assertNotNull(responseBody);
+
+        final List<ReadCategoryResponseDTO> categories = responseBody.getContent();
+        assertEquals(1, categories.size());
+
+        final ReadCategoryResponseDTO readCategoryResponseDTO = categories.get(0);
+        assertEquals(1L, readCategoryResponseDTO.getId(), 0);
     }
 
     private CreateCategoryRequestDTO getCategoryRequesDTO() {
