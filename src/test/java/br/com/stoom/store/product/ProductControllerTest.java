@@ -1,6 +1,7 @@
 package br.com.stoom.store.product;
 
 import br.com.stoom.store.IntegrationTestInitializer;
+import br.com.stoom.store.dto.CustomPageImpl;
 import br.com.stoom.store.dto.brand.CreateBrandRequestDTO;
 import br.com.stoom.store.dto.category.CreateCategoryRequestDTO;
 import br.com.stoom.store.dto.category.ReadCategoryResponseDTO;
@@ -11,6 +12,9 @@ import br.com.stoom.store.dto.product.UpdateProductStatusDTO;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -18,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -315,6 +320,109 @@ public class ProductControllerTest extends IntegrationTestInitializer {
                 );
 
         assertEquals(readResponse.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    @Sql("/database/clear_database.sql")
+    public void shouldBeAbleToListAllProducts() {
+        this.createBrand();
+        this.createCategory();
+
+        final String resourceLocation = "/api/products";
+
+        final CreateProductRequestDTO createProductRequestDTO = this.getProductRequesDTO();
+
+        final HttpEntity<CreateProductRequestDTO> httpEntity = new HttpEntity<>(createProductRequestDTO);
+
+        this.testRestTemplate
+                .exchange(
+                        resourceLocation,
+                        HttpMethod.POST,
+                        httpEntity,
+                        Void.class
+                );
+
+        this.testRestTemplate
+                .exchange(
+                        resourceLocation,
+                        HttpMethod.POST,
+                        httpEntity,
+                        Void.class
+                );
+
+        final ResponseEntity<CustomPageImpl<ReadProductResponseDTO>> productsPage = this.testRestTemplate
+                .exchange(
+                        resourceLocation + "?page=0&size=5",
+                        HttpMethod.GET,
+                        httpEntity,
+                        new ParameterizedTypeReference<CustomPageImpl<ReadProductResponseDTO>>() {}
+                );
+
+        final Page<ReadProductResponseDTO> responseBody = productsPage.getBody();
+        assertNotNull(responseBody);
+
+        final List<ReadProductResponseDTO> products = responseBody.getContent();
+        assertEquals(2, products.size());
+    }
+
+    @Test
+    @Sql("/database/clear_database.sql")
+    public void shouldNotBeAbleToListDeactivateProducts() {
+        this.createBrand();
+        this.createCategory();
+
+        final String resourceLocation = "/api/products";
+
+        final CreateProductRequestDTO createProductRequestDTO = this.getProductRequesDTO();
+
+        final HttpEntity<CreateProductRequestDTO> httpEntity = new HttpEntity<>(createProductRequestDTO);
+
+        this.testRestTemplate
+                .exchange(
+                        resourceLocation,
+                        HttpMethod.POST,
+                        httpEntity,
+                        Void.class
+                );
+
+        this.testRestTemplate
+                .exchange(
+                        resourceLocation,
+                        HttpMethod.POST,
+                        httpEntity,
+                        Void.class
+                );
+
+        final UpdateProductStatusDTO updateProductStatusDTO = new UpdateProductStatusDTO(false);
+
+        final HttpEntity<UpdateProductStatusDTO> updateProductHttpEntity =
+                new HttpEntity<>(updateProductStatusDTO);
+
+        this.testRestTemplate
+                .exchange(
+                        resourceLocation + "/2",
+                        HttpMethod.PUT,
+                        updateProductHttpEntity,
+                        Void.class
+                );
+
+        final ResponseEntity<CustomPageImpl<ReadProductResponseDTO>> productsPage = this.testRestTemplate
+                .exchange(
+                        resourceLocation + "?page=0&size=5",
+                        HttpMethod.GET,
+                        httpEntity,
+                        new ParameterizedTypeReference<CustomPageImpl<ReadProductResponseDTO>>() {
+                        }
+                );
+
+        final Page<ReadProductResponseDTO> responseBody = productsPage.getBody();
+        assertNotNull(responseBody);
+
+        final List<ReadProductResponseDTO> products = responseBody.getContent();
+        assertEquals(1, products.size());
+
+        final ReadProductResponseDTO readProductResponseDTO = products.get(0);
+        assertEquals(1L, readProductResponseDTO.getId(), 0);
     }
 
     private CreateProductRequestDTO getProductRequesDTO() {
