@@ -38,9 +38,8 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("DESAFIO STOOM")
-                .description("Essa é a documentação da API da empresa Stoom seu E-commerce de ponta a ponta")
+                .description("Essa é a documentação da API da empresa Stoom")
                 .version("1.0.0")
-                .contact(new Contact("STOOM", "https://stoom.com.br/", "falecom@stoom.com.br"))
                 .build();
     }
 
