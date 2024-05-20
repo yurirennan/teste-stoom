@@ -1,6 +1,7 @@
 package br.com.stoom.store.controller;
 
 import br.com.stoom.store.business.interfaces.IProductBO;
+import br.com.stoom.store.dto.CustomPageImpl;
 import br.com.stoom.store.dto.product.CreateProductRequestDTO;
 import br.com.stoom.store.dto.product.ReadProductResponseDTO;
 import br.com.stoom.store.dto.product.UpdateProductStatusDTO;
@@ -27,8 +28,8 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ReadProductResponseDTO>> findAll(final Pageable pageable) {
-        final Page<ReadProductResponseDTO> readProductResponseDTOS = productService.findAll(pageable);
+    public ResponseEntity<CustomPageImpl<ReadProductResponseDTO>> findAll(final Pageable pageable) {
+        final CustomPageImpl<ReadProductResponseDTO> readProductResponseDTOS = productService.findAll(pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(readProductResponseDTOS);
     }

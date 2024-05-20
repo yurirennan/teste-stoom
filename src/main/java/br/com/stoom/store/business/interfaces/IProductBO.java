@@ -1,5 +1,6 @@
 package br.com.stoom.store.business.interfaces;
 
+import br.com.stoom.store.dto.CustomPageImpl;
 import br.com.stoom.store.dto.product.CreateProductRequestDTO;
 import br.com.stoom.store.dto.product.ReadProductResponseDTO;
 import br.com.stoom.store.dto.product.UpdateProductStatusDTO;
@@ -11,7 +12,7 @@ import java.util.List;
 
 public interface IProductBO {
 
-    Page<ReadProductResponseDTO> findAll(final Pageable pageable);
+    CustomPageImpl<ReadProductResponseDTO> findAll(final Pageable pageable);
 
     void saveProduct(final CreateProductRequestDTO createProductRequestDTO);
 
@@ -21,7 +22,7 @@ public interface IProductBO {
 
     void deleteProduct(final Long productId);
 
-    Page<ReadProductResponseDTO> listAllProductsByBrand(final Long brandId, final Pageable pageable);
+    CustomPageImpl<ReadProductResponseDTO> listAllProductsByBrand(final Long brandId, final Pageable pageable);
 
-    Page<ReadProductResponseDTO> listAllProductsByCategory(final Long categoryId, final Pageable pageable);
+    CustomPageImpl<ReadProductResponseDTO> listAllProductsByCategory(final Long categoryId, final Pageable pageable);
 }

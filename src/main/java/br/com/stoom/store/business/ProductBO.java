@@ -1,6 +1,7 @@
 package br.com.stoom.store.business;
 
 import br.com.stoom.store.business.interfaces.IProductBO;
+import br.com.stoom.store.dto.CustomPageImpl;
 import br.com.stoom.store.dto.product.CreateProductRequestDTO;
 import br.com.stoom.store.dto.product.ReadProductResponseDTO;
 import br.com.stoom.store.dto.product.UpdateProductStatusDTO;
@@ -16,6 +17,8 @@ import br.com.stoom.store.repository.BrandRepository;
 import br.com.stoom.store.repository.CategoryRepository;
 import br.com.stoom.store.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -43,7 +46,8 @@ public class ProductBO implements IProductBO {
     }
 
     @Override
-    public Page<ReadProductResponseDTO> findAll(final Pageable pageable){
+    @Cacheable("products")
+    public CustomPageImpl<ReadProductResponseDTO> findAll(final Pageable pageable){
         final Page<Product> productPage = this.productRepository.findAllByActiveTrue(pageable);
 
         final List<ReadProductResponseDTO> readProductResponseDTOS = productPage
@@ -52,10 +56,11 @@ public class ProductBO implements IProductBO {
                 .map(ReadProductResponseDTO::fromProduct)
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(readProductResponseDTOS, productPage.getPageable(), productPage.getTotalElements());
+        return new CustomPageImpl<>(readProductResponseDTOS, productPage.getPageable(), productPage.getTotalElements());
     }
 
     @Override
+    @CacheEvict(value = {"products", "products_by_brand", "products_by_category"}, allEntries = true)
     public void saveProduct(final CreateProductRequestDTO createProductRequestDTO) {
 
         final Optional<Brand> brandOptional =
@@ -91,6 +96,7 @@ public class ProductBO implements IProductBO {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"products", "products_by_brand", "products_by_category"}, allEntries = true)
     public void updateProductStatus(final Long productId, final UpdateProductStatusDTO updateProductStatusDTO) {
         final Optional<Product> productOptional =
                 this.productRepository.findById(productId);
@@ -103,6 +109,7 @@ public class ProductBO implements IProductBO {
     }
 
     @Override
+    @CacheEvict(value = {"products", "products_by_brand", "products_by_category"}, allEntries = true)
     public void deleteProduct(final Long productId) {
         final Optional<Product> productOptional =
                 this.productRepository.findProductByIdAndActiveTrue(productId);
@@ -115,7 +122,8 @@ public class ProductBO implements IProductBO {
     }
 
     @Override
-    public Page<ReadProductResponseDTO> listAllProductsByBrand(final Long brandId, final Pageable pageable) {
+    @Cacheable("products_by_brand")
+    public CustomPageImpl<ReadProductResponseDTO> listAllProductsByBrand(final Long brandId, final Pageable pageable) {
         final Optional<Brand> brandOptional = this.brandRepository.findBrandByIdAndActiveTrue(brandId);
 
         if (!brandOptional.isPresent()) {
@@ -131,11 +139,12 @@ public class ProductBO implements IProductBO {
                 .map(ReadProductResponseDTO::fromProduct)
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(readProductResponseDTOS, productsPage.getPageable(), productsPage.getTotalElements());
+        return new CustomPageImpl<>(readProductResponseDTOS, productsPage.getPageable(), productsPage.getTotalElements());
     }
 
     @Override
-    public Page<ReadProductResponseDTO> listAllProductsByCategory(final Long categoryId, final Pageable pageable) {
+    @Cacheable("products_by_category")
+    public CustomPageImpl<ReadProductResponseDTO> listAllProductsByCategory(final Long categoryId, final Pageable pageable) {
         final Optional<Category> categoryOptional = this.categoryRepository.findCategoryByIdAndActiveTrue(categoryId);
 
         if (!categoryOptional.isPresent()) {
@@ -152,7 +161,7 @@ public class ProductBO implements IProductBO {
                 .map(ReadProductResponseDTO::fromProduct)
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(readProductResponseDTOS, productsPage.getPageable(), productsPage.getTotalElements());
+        return new CustomPageImpl<>(readProductResponseDTOS, productsPage.getPageable(), productsPage.getTotalElements());
     }
 
 }
