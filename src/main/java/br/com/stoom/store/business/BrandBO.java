@@ -46,7 +46,6 @@ public class BrandBO implements IBrandBO {
     }
 
     @Override
-    @Cacheable(value = "brand", key = "#brandId")
     public ReadBrandResponseDTO listBrand(final Long brandId) {
         final Optional<Brand> brandOptional = this.brandRepository.findBrandByIdAndActiveTrue(brandId);
 
@@ -75,7 +74,7 @@ public class BrandBO implements IBrandBO {
 
     @Override
     @Transactional
-    @CacheEvict(value = "brand", key = "#brandId")
+    @CacheEvict(value = "brands", allEntries = true)
     public void updateBrandStatus(final Long brandId, final UpdateBrandStatusDTO updateBrandStatusDTO) {
         this.brandRepository.updateBrandStatusById(brandId, updateBrandStatusDTO.getStatus());
     }

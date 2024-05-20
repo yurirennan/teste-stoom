@@ -58,9 +58,9 @@ public class BrandController {
     }
 
     @GetMapping("/{id}/products")
-    public ResponseEntity<Page<ReadProductResponseDTO>> listAllProductsByBrand(@PathVariable("id") final Long brandId,
+    public ResponseEntity<CustomPageImpl<ReadProductResponseDTO>> listAllProductsByBrand(@PathVariable("id") final Long brandId,
                                                                                final Pageable pageable) {
-        final Page<ReadProductResponseDTO> readProductResponseDTOS =
+        final CustomPageImpl<ReadProductResponseDTO> readProductResponseDTOS =
                 this.productBO.listAllProductsByBrand(brandId, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(readProductResponseDTOS);
