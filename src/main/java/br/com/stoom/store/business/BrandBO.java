@@ -2,6 +2,7 @@ package br.com.stoom.store.business;
 
 import br.com.stoom.store.business.interfaces.IBrandBO;
 import br.com.stoom.store.business.interfaces.ICategoryBO;
+import br.com.stoom.store.dto.CustomPageImpl;
 import br.com.stoom.store.dto.brand.CreateBrandRequestDTO;
 import br.com.stoom.store.dto.brand.ReadBrandResponseDTO;
 import br.com.stoom.store.dto.brand.UpdateBrandStatusDTO;
@@ -14,6 +15,8 @@ import br.com.stoom.store.model.Category;
 import br.com.stoom.store.repository.BrandRepository;
 import br.com.stoom.store.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -36,12 +39,14 @@ public class BrandBO implements IBrandBO {
 
 
     @Override
+    @CacheEvict(value = "brands", allEntries = true)
     public void createBrand(final CreateBrandRequestDTO brandRequestDTO) {
         final Brand brand = brandRequestDTO.toBrand();
         this.brandRepository.save(brand);
     }
 
     @Override
+    @Cacheable(value = "brand", key = "#brandId")
     public ReadBrandResponseDTO listBrand(final Long brandId) {
         final Optional<Brand> brandOptional = this.brandRepository.findBrandByIdAndActiveTrue(brandId);
 
@@ -55,7 +60,8 @@ public class BrandBO implements IBrandBO {
     }
 
     @Override
-    public Page<ReadBrandResponseDTO> listAllBrands(Pageable pageable) {
+    @Cacheable("brands")
+    public CustomPageImpl<ReadBrandResponseDTO> listAllBrands(Pageable pageable) {
         final Page<Brand> brandsPage = this.brandRepository.findAllByActiveTrue(pageable);
 
         final List<ReadBrandResponseDTO> readBrandResponseDTOList = brandsPage
@@ -64,11 +70,12 @@ public class BrandBO implements IBrandBO {
                 .map(ReadBrandResponseDTO::fromBrand)
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(readBrandResponseDTOList, brandsPage.getPageable(), brandsPage.getTotalElements());
+        return new CustomPageImpl<>(readBrandResponseDTOList, brandsPage.getPageable(), brandsPage.getTotalElements());
     }
 
     @Override
     @Transactional
+    @CacheEvict(value = "brand", key = "#brandId")
     public void updateBrandStatus(final Long brandId, final UpdateBrandStatusDTO updateBrandStatusDTO) {
         this.brandRepository.updateBrandStatusById(brandId, updateBrandStatusDTO.getStatus());
     }

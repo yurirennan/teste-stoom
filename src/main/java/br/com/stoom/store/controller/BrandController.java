@@ -2,6 +2,7 @@ package br.com.stoom.store.controller;
 
 import br.com.stoom.store.business.interfaces.IBrandBO;
 import br.com.stoom.store.business.interfaces.IProductBO;
+import br.com.stoom.store.dto.CustomPageImpl;
 import br.com.stoom.store.dto.brand.CreateBrandRequestDTO;
 import br.com.stoom.store.dto.brand.ReadBrandResponseDTO;
 import br.com.stoom.store.dto.brand.UpdateBrandStatusDTO;
@@ -43,8 +44,8 @@ public class BrandController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ReadBrandResponseDTO>> listAllBrands(final Pageable pageable) {
-        final Page<ReadBrandResponseDTO> readBrandResponseDTOList = this.brandBO.listAllBrands(pageable);
+    public ResponseEntity<CustomPageImpl<ReadBrandResponseDTO>> listAllBrands(final Pageable pageable) {
+        final CustomPageImpl<ReadBrandResponseDTO> readBrandResponseDTOList = this.brandBO.listAllBrands(pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(readBrandResponseDTOList);
     }
