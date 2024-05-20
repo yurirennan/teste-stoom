@@ -1,5 +1,6 @@
 package br.com.stoom.store.business.interfaces;
 
+import br.com.stoom.store.dto.CustomPageImpl;
 import br.com.stoom.store.dto.category.CreateCategoryRequestDTO;
 import br.com.stoom.store.dto.category.ReadCategoryResponseDTO;
 import br.com.stoom.store.dto.category.UpdateCategoryStatusDTO;
@@ -14,7 +15,7 @@ public interface ICategoryBO {
 
     ReadCategoryResponseDTO listCategory(final Long categoryId);
 
-    Page<ReadCategoryResponseDTO> listAllCategory(Pageable pageable);
+    CustomPageImpl<ReadCategoryResponseDTO> listAllCategory(Pageable pageable);
 
     void updateCategoryStatus(final Long categoryId, final UpdateCategoryStatusDTO updateCategoryStatusDTO);
 

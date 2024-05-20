@@ -2,6 +2,7 @@ package br.com.stoom.store.controller;
 
 import br.com.stoom.store.business.interfaces.ICategoryBO;
 import br.com.stoom.store.business.interfaces.IProductBO;
+import br.com.stoom.store.dto.CustomPageImpl;
 import br.com.stoom.store.dto.category.CreateCategoryRequestDTO;
 import br.com.stoom.store.dto.category.ReadCategoryResponseDTO;
 import br.com.stoom.store.dto.category.UpdateCategoryStatusDTO;
@@ -43,8 +44,8 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ReadCategoryResponseDTO>> listAllCategory(Pageable pageable) {
-        final Page<ReadCategoryResponseDTO> readCategoryResponseDTOS = this.categoryBO.listAllCategory(pageable);
+    public ResponseEntity<CustomPageImpl<ReadCategoryResponseDTO>> listAllCategory(Pageable pageable) {
+        final CustomPageImpl<ReadCategoryResponseDTO> readCategoryResponseDTOS = this.categoryBO.listAllCategory(pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(readCategoryResponseDTOS);
     }
@@ -57,8 +58,8 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}/products")
-    public ResponseEntity<Page<ReadProductResponseDTO>> listAllProductsByCategory(@PathVariable("id") final Long categoryId, final Pageable pageable) {
-        final Page<ReadProductResponseDTO> readProductResponseDTOS = this.productBO.listAllProductsByCategory(categoryId, pageable);
+    public ResponseEntity<CustomPageImpl<ReadProductResponseDTO>> listAllProductsByCategory(@PathVariable("id") final Long categoryId, final Pageable pageable) {
+        final CustomPageImpl<ReadProductResponseDTO> readProductResponseDTOS = this.productBO.listAllProductsByCategory(categoryId, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(readProductResponseDTOS);
     }

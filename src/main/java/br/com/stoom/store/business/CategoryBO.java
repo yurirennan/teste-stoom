@@ -1,6 +1,7 @@
 package br.com.stoom.store.business;
 
 import br.com.stoom.store.business.interfaces.ICategoryBO;
+import br.com.stoom.store.dto.CustomPageImpl;
 import br.com.stoom.store.dto.category.CreateCategoryRequestDTO;
 import br.com.stoom.store.dto.category.ReadCategoryResponseDTO;
 import br.com.stoom.store.dto.category.UpdateCategoryStatusDTO;
@@ -8,6 +9,8 @@ import br.com.stoom.store.exceptions.category.CategoryNotFoundException;
 import br.com.stoom.store.model.Category;
 import br.com.stoom.store.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +32,7 @@ public class CategoryBO implements ICategoryBO {
     }
 
     @Override
+    @CacheEvict(value = "categories", allEntries = true)
     public void createCategory(final CreateCategoryRequestDTO categoryRequestDTO) {
         final Category category = categoryRequestDTO.toCategory();
         this.categoryRepository.save(category);
@@ -48,7 +52,8 @@ public class CategoryBO implements ICategoryBO {
     }
 
     @Override
-    public Page<ReadCategoryResponseDTO> listAllCategory(Pageable pageable) {
+    @Cacheable("categories")
+    public CustomPageImpl<ReadCategoryResponseDTO> listAllCategory(Pageable pageable) {
         final Page<Category> categoryPage = this.categoryRepository.findAllByActiveTrue(pageable);
 
         final List<ReadCategoryResponseDTO> categoriesDTO = categoryPage
@@ -56,11 +61,12 @@ public class CategoryBO implements ICategoryBO {
                 .stream()
                 .map(ReadCategoryResponseDTO::fromCategory).collect(Collectors.toList());
 
-        return new PageImpl<>(categoriesDTO, categoryPage.getPageable(), categoryPage.getTotalElements());
+        return new CustomPageImpl<>(categoriesDTO, categoryPage.getPageable(), categoryPage.getTotalElements());
     }
 
     @Override
     @Transactional
+    @CacheEvict(value = "categories", allEntries = true)
     public void updateCategoryStatus(final Long categoryId, final UpdateCategoryStatusDTO updateCategoryStatusDTO) {
         this.categoryRepository.updateCategoryStatusById(categoryId, updateCategoryStatusDTO.getStatus());
     }
